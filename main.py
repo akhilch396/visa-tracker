@@ -18,7 +18,14 @@ def check_slots():
 
     try:
         url = "https://checkvisaslots.com/latest-us-visa-availability.json"
-        response = requests.get(url, timeout=10)
+        # response = requests.get(url, timeout=10)
+        response = requests.get(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0"
+            },
+            timeout=10
+        )
 
         if response.status_code != 200 or not response.text.strip():
             print("API error")
