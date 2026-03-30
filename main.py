@@ -23,14 +23,21 @@ def send_telegram(msg):
 
 
 def check_slots():
-    print("🔥 VERSION 2 DEPLOYED 🔥")
+    print("🔥 VERSION 3 DEPLOYED (FINAL FIX) 🔥")
     print("Checking visa slots...")
 
     try:
         url = "https://checkvisaslots.com/latest-us-visa-availability.json"
-        response = requests.get(url, timeout=10)
 
-        # ✅ Log API response info
+        # ✅ FIX: Add headers to bypass blocking
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "Accept": "application/json",
+            "Connection": "keep-alive"
+        }
+
+        response = requests.get(url, headers=headers, timeout=15)
+
         print(f"API status: {response.status_code}")
         print(f"API response sample: {response.text[:200]}")
 
@@ -47,7 +54,7 @@ def check_slots():
         try:
             data = response.json()
         except Exception:
-            print("API error: invalid JSON")
+            print("API error: invalid JSON (blocked or HTML returned)")
             return
 
         if not isinstance(data, list):
@@ -66,7 +73,7 @@ def check_slots():
             if visa in ["H1B", "H4"]:
                 slots.append(f"{visa} | {loc} | {date}")
 
-        # 🔥 Send alert if slots exist
+        # ✅ Send alert if slots found
         if slots:
             msg = "🚨 VISA SLOT ALERT 🚨\n\n" + "\n".join(slots[:5])
             send_telegram(msg)
@@ -78,7 +85,7 @@ def check_slots():
         print(f"ERROR: {str(e)}")
 
 
-# 🔁 Run every 5 minutes (300 sec)
+# 🔁 Run every 5 minutes
 while True:
     check_slots()
     time.sleep(300)
