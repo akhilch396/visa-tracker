@@ -5,35 +5,58 @@ import os
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-last_sent = set()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+
+    try:
+        response = requests.post(url, data={
+            "chat_id": CHAT_ID,
+            "text": msg
+        })
+
+        print(f"Telegram status: {response.status_code}")
+        print(f"Telegram response: {response.text}")
+
+    except Exception as e:
+        print(f"Telegram error: {str(e)}")
+
 
 def check_slots():
-    global last_sent
-
+    print("🔥 VERSION 2 DEPLOYED 🔥")
     print("Checking visa slots...")
 
     try:
         url = "https://checkvisaslots.com/latest-us-visa-availability.json"
-        # response = requests.get(url, timeout=10)
-        response = requests.get(
-            url,
-            headers={
-                "User-Agent": "Mozilla/5.0"
-            },
-            timeout=10
-        )
+        response = requests.get(url, timeout=10)
 
-        if response.status_code != 200 or not response.text.strip():
-            print("API error")
+        # ✅ Log API response info
+        print(f"API status: {response.status_code}")
+        print(f"API response sample: {response.text[:200]}")
+
+        # ❌ Handle bad response
+        if response.status_code != 200:
+            print("API error: bad status code")
             return
 
-        data = response.json()
+        if not response.text.strip():
+            print("API error: empty response")
+            return
 
-        new_slots = []
+        # ❌ Handle invalid JSON
+        try:
+            data = response.json()
+        except Exception:
+            print("API error: invalid JSON")
+            return
+
+        if not isinstance(data, list):
+            print("API error: unexpected format")
+            return
+
+        print(f"Records received: {len(data)}")
+
+        slots = []
 
         for entry in data:
             visa = entry.get("visa_type", "")
@@ -41,24 +64,21 @@ def check_slots():
             date = entry.get("date", "")
 
             if visa in ["H1B", "H4"]:
-                new_slots.append(f"{visa} | {loc} | {date}")
+                slots.append(f"{visa} | {loc} | {date}")
 
-        new_slots_set = set(new_slots)
-        diff = new_slots_set - last_sent
-
-        if diff:
-            msg = "🚨 NEW VISA SLOT ALERT 🚨\n\n" + "\n".join(list(diff)[:5])
+        # 🔥 Send alert if slots exist
+        if slots:
+            msg = "🚨 VISA SLOT ALERT 🚨\n\n" + "\n".join(slots[:5])
             send_telegram(msg)
-            print("Alert sent")
-
-            last_sent = new_slots_set
+            print("✅ Alert sent")
         else:
-            print("No new slots")
+            print("No slots found")
 
     except Exception as e:
-        print("Error:", e)
+        print(f"ERROR: {str(e)}")
 
 
+# 🔁 Run every 5 minutes (300 sec)
 while True:
     check_slots()
-    time.sleep(300)  # every 5 mins
+    time.sleep(300)
