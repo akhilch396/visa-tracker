@@ -7,49 +7,21 @@ CHAT_ID = os.getenv("CHAT_ID")
 
 
 def send_telegram(msg):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    
+    url = f"https://api.telegram.org/bot8637487298:AAFmDtvyk-ky-i2OZ6FtvpXQ1niVehWdhAo/sendMessage"
     res = requests.post(url, data={
         "chat_id": CHAT_ID,
         "text": msg
     })
-
     print("Telegram:", res.status_code, res.text)
 
 
 def check_slots():
-    print("🔥 VERSION 6 RUNNING (REAL TRACKER) 🔥")
+    print("🔥 VERSION 5 RUNNING (FINAL TEST) 🔥")
 
-    try:
-        url = "https://api.github.com/repos/saransh138/h1b-visa-slots/contents/slots.json"
+    # ✅ JUST SEND MESSAGE (NO API)
+    msg = "🚨 SYSTEM WORKING 🚨\n\nYour visa tracker is running successfully!"
 
-        headers = {
-            "Accept": "application/vnd.github.v3.raw"
-        }
-
-        response = requests.get(url, headers=headers)
-
-        print("Status:", response.status_code)
-
-        if response.status_code != 200:
-            print("API failed")
-            return
-
-        data = response.json()
-
-        if not data:
-            print("No slots found")
-            return
-
-        msg = "🚨 VISA SLOTS FOUND 🚨\n\n"
-
-        for entry in data[:5]:
-            msg += f"{entry}\n"
-
-        send_telegram(msg)
-
-    except Exception as e:
-        print("Error:", str(e))
+    send_telegram(msg)
 
 
 # 🔁 RUN EVERY 5 MINUTES
