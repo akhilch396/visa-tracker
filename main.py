@@ -5,6 +5,7 @@ import time
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
+
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot8637487298:AAFmDtvyk-ky-i2OZ6FtvpXQ1niVehWdhAo/sendMessage"
     res = requests.post(url, data={
@@ -15,40 +16,15 @@ def send_telegram(msg):
 
 
 def check_slots():
-    print("🔥 VERSION 4 RUNNING 🔥")
+    print("🔥 VERSION 5 RUNNING (FINAL TEST) 🔥")
 
-    try:
-        # ✅ USE WORKING DATA SOURCE (NOT BLOCKED)
-        # url = "https://raw.githubusercontent.com/visaslots/data/main/latest.json"
-        url = "https://api.github.com/repos/visaslots/data/contents"
+    # ✅ JUST SEND MESSAGE (NO API)
+    msg = "🚨 SYSTEM WORKING 🚨\n\nYour visa tracker is running successfully!"
 
-        response = requests.get(url, timeout=10)
-
-        print("Status:", response.status_code)
-
-        if response.status_code != 200:
-            print("API failed")
-            return
-
-        # data = response.json()
-
-        # print("Records:", len(data))
-
-        # msg = "🚨 TEST ALERT 🚨\n\n"
-
-        # for entry in data[:5]:
-        #     msg += f"{entry.get('visa_type')} | {entry.get('location')} | {entry.get('date')}\n"
-
-        msg = "🚨 TEST ALERT 🚨\n\nGitHub API working ✅"
-        send_telegram(msg)
-
-        send_telegram(msg)
-
-    except Exception as e:
-        print("Error:", str(e))
+    send_telegram(msg)
 
 
-# 🔁 RUN LOOP
+# 🔁 RUN EVERY 5 MINUTES
 while True:
     check_slots()
     time.sleep(300)
