@@ -5,3 +5,6 @@
 azure-functions
 
 requests
+
+
+beautifulsoup4
