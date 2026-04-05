@@ -19,7 +19,8 @@ def check_slots():
 
     try:
         # ✅ USE WORKING DATA SOURCE (NOT BLOCKED)
-        url = "https://raw.githubusercontent.com/visaslots/data/main/latest.json"
+        # url = "https://raw.githubusercontent.com/visaslots/data/main/latest.json"
+        url = "https://api.github.com/repos/visaslots/data/contents"
 
         response = requests.get(url, timeout=10)
 
@@ -29,14 +30,17 @@ def check_slots():
             print("API failed")
             return
 
-        data = response.json()
+        # data = response.json()
 
-        print("Records:", len(data))
+        # print("Records:", len(data))
 
-        msg = "🚨 TEST ALERT 🚨\n\n"
+        # msg = "🚨 TEST ALERT 🚨\n\n"
 
-        for entry in data[:5]:
-            msg += f"{entry.get('visa_type')} | {entry.get('location')} | {entry.get('date')}\n"
+        # for entry in data[:5]:
+        #     msg += f"{entry.get('visa_type')} | {entry.get('location')} | {entry.get('date')}\n"
+
+        msg = "🚨 TEST ALERT 🚨\n\nGitHub API working ✅"
+        send_telegram(msg)
 
         send_telegram(msg)
 
