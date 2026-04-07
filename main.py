@@ -28,8 +28,10 @@ def check_slots():
 
         print("Status:", response.status_code)
 
+        # 🔴 HANDLE API FAILURE
         if response.status_code != 200:
-            print("API failed")
+            msg = f"⚠️ API ISSUE ⚠️\n\nStatus Code: {response.status_code}\nSource may be down."
+            send_telegram(msg)
             return
 
         data = response.json()
@@ -47,8 +49,8 @@ def check_slots():
 
     except Exception as e:
         print("Error:", str(e))
+        send_telegram(f"❌ ERROR:\n{str(e)}")
 
 
-# ✅ RUN ONLY ONCE (IMPORTANT FOR GITHUB ACTIONS)
-if __name__ == "__main__":
-    check_slots()
+# RUN ONCE (important for GitHub Actions)
+check_slots()
