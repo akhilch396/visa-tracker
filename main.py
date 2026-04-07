@@ -1,28 +1,21 @@
 import requests
 import os
-import time
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-last_sent = set()  # prevents duplicate alerts
-
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
     res = requests.post(url, data={
         "chat_id": CHAT_ID,
         "text": msg
     })
-
-    print("Telegram:", res.status_code)
+    print("Telegram:", res.status_code, res.text)
 
 
 def check_slots():
-    global last_sent
-
-    print("🔥 VERSION 8 RUNNING (REAL TRACKER) 🔥")
+    print("🔥 VERSION FINAL (GITHUB ACTIONS) 🔥")
 
     try:
         url = "https://api.github.com/repos/saransh138/h1b-visa-slots/contents/slots.json"
@@ -42,34 +35,20 @@ def check_slots():
         data = response.json()
 
         if not data:
-            print("No slots available")
+            print("No slots found")
             return
 
-        new_slots = []
+        msg = "🚨 VISA SLOTS FOUND 🚨\n\n"
 
-        for entry in data:
-            text = str(entry)
-
-            if text not in last_sent:
-                new_slots.append(text)
-
-        if not new_slots:
-            print("No new slots")
-            return
-
-        msg = "🚨 NEW VISA SLOTS 🚨\n\n"
-
-        for slot in new_slots[:5]:
-            msg += f"{slot}\n"
+        for entry in data[:5]:
+            msg += f"{entry}\n"
 
         send_telegram(msg)
-
-        last_sent.update(new_slots)
 
     except Exception as e:
         print("Error:", str(e))
 
 
-while True:
+# ✅ RUN ONLY ONCE (IMPORTANT FOR GITHUB ACTIONS)
+if __name__ == "__main__":
     check_slots()
-    time.sleep(300)
